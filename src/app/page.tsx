@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Image from "next/image";
-import { Inter, Lexend, Noto_Sans_Devanagari } from 'next/font/google';
+import { Inter, Noto_Sans_Devanagari } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 
 const inter = Inter({ subsets: ['latin'] });
-const lexend = Lexend({ subsets: ['latin'] });
 const anke = Noto_Sans_Devanagari({ 
   weight: ['700'],
   subsets: ['devanagari'] 
@@ -86,9 +84,7 @@ const colors = {
 export default function Home() {
   const [theme, setTheme] = useState<Theme>('light');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [signupNumber, setSignupNumber] = useState<number | null>(null);
-  const [isDuplicate, setIsDuplicate] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const c = colors[theme];
@@ -130,7 +126,6 @@ export default function Home() {
         .single();
 
       if (existingSignup) {
-        setIsDuplicate(true);
         return;
       }
 
@@ -161,14 +156,6 @@ export default function Home() {
       setError('Something went wrong. Please try again.');
     }
   };
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000); // Change testimonial every 5 seconds
-
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <main className={`${inter.className} min-h-screen relative overflow-hidden ${
