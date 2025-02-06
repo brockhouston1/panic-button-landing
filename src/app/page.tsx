@@ -87,8 +87,6 @@ export default function Home() {
   const [signupNumber, setSignupNumber] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   
-  const c = colors[theme];
-
   const {
     register,
     handleSubmit,
