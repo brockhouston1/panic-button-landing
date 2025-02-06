@@ -53,34 +53,6 @@ const features = [
 // Add theme type and colors object
 type Theme = 'light' | 'dark';
 
-const colors = {
-  light: {
-    background: '#F8FAFC',
-    text: '#1E293B',
-    muted: '#475569',
-    mutedSecondary: '#64748B',
-    placeholder: '#94A3B8',
-    border: '#E2E8F0',
-    cardBg: 'white',
-    primary: '#60A5FA',
-    secondary: '#818CF8',
-    tertiary: '#38BDF8',
-  },
-  dark: {
-    background: '#0A0F1A',
-    text: '#F8FAFC',
-    muted: 'rgba(248, 250, 252, 0.8)',
-    mutedSecondary: 'rgba(248, 250, 252, 0.6)',
-    placeholder: 'rgba(248, 250, 252, 0.4)',
-    border: '#1E293B',
-    cardBg: '#111827',
-    primary: '#60A5FA',
-    secondary: '#818CF8',
-    tertiary: '#38BDF8',
-    inputBg: '#0F172A',
-  },
-};
-
 export default function Home() {
   const [theme, setTheme] = useState<Theme>('light');
   const [isSubmitted, setIsSubmitted] = useState(false);
