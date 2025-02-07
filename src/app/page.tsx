@@ -121,15 +121,23 @@ export default function Home() {
 
       // Send Discord notification
       try {
-        await fetch(process.env.DISCORD_WEBHOOK_URL!, {
+        console.log('Sending Discord notification...');
+        const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
+        if (!webhookUrl) {
+          console.error('Discord webhook URL is not defined');
+          throw new Error('Discord webhook URL is not defined');
+        }
+
+        const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            content: `🎉 New signup received!`,
             embeds: [{
               title: '🎉 New Signup!',
-              color: 0x60A5FA, // Your brand blue color
+              color: 0x60A5FA,
               fields: [
                 {
                   name: 'Email',
@@ -156,9 +164,16 @@ export default function Home() {
             }]
           }),
         });
+
+        if (!response.ok) {
+          const responseText = await response.text();
+          console.error('Discord API error:', response.status, responseText);
+          throw new Error(`Discord API error: ${response.status}`);
+        }
+
+        console.log('Discord notification sent successfully!');
       } catch (discordError) {
         console.error('Failed to send Discord notification:', discordError);
-        // Don't throw the error - we don't want to affect the user experience
       }
 
       setSignupNumber(count);
