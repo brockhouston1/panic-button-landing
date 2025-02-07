@@ -119,6 +119,48 @@ export default function Home() {
         .from('signups')
         .select('*', { count: 'exact', head: true });
 
+      // Send Discord notification
+      try {
+        await fetch(process.env.DISCORD_WEBHOOK_URL!, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            embeds: [{
+              title: '🎉 New Signup!',
+              color: 0x60A5FA, // Your brand blue color
+              fields: [
+                {
+                  name: 'Email',
+                  value: data.email,
+                  inline: true,
+                },
+                {
+                  name: 'User Type',
+                  value: data.userTypes.join(', '),
+                  inline: true,
+                },
+                {
+                  name: 'Phone',
+                  value: data.phone || 'Not provided',
+                  inline: true,
+                },
+                {
+                  name: 'Total Signups',
+                  value: `#${count}`,
+                  inline: false,
+                }
+              ],
+              timestamp: new Date().toISOString(),
+            }]
+          }),
+        });
+      } catch (discordError) {
+        console.error('Failed to send Discord notification:', discordError);
+        // Don't throw the error - we don't want to affect the user experience
+      }
+
       setSignupNumber(count);
       setIsSubmitted(true);
     } catch (error) {
