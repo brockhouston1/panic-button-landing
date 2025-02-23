@@ -346,50 +346,58 @@ export default function Home() {
                       <label className={`block text-lg font-medium mb-3 ${
                         theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
                       }`}>Phone number</label>
-                      <div className="relative flex gap-2">
-                        <div className="relative">
+                      <div className="relative flex flex-col sm:flex-row gap-2">
+                        <div className="relative w-full sm:w-auto">
                           <button
                             type="button"
                             onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-                            className={`h-full px-4 rounded-lg border-2 transition-all duration-300 flex items-center gap-2 ${
+                            className={`w-full sm:w-auto h-[60px] sm:h-full px-4 rounded-lg border-2 transition-all duration-300 flex items-center justify-center sm:justify-start gap-2 ${
                               theme === 'light'
                                 ? 'bg-white border-[#E2E8F0] hover:border-[#60A5FA] text-[#1E293B]'
                                 : 'bg-[#0F172A] border-[#1E293B] hover:border-[#60A5FA] text-[#F8FAFC]'
                             }`}
                           >
                             <span className="text-xl">{selectedCountry.flag}</span>
-                            <span className="text-sm font-medium">{selectedCountry.code}</span>
-                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span className="text-base font-medium">{selectedCountry.code}</span>
+                            <svg className="w-4 h-4 ml-1 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                           </button>
                           
                           {isCountryDropdownOpen && (
-                            <div className={`absolute z-50 mt-2 w-48 rounded-lg shadow-lg border-2 ${
-                              theme === 'light'
-                                ? 'bg-white border-[#E2E8F0]'
-                                : 'bg-[#0F172A] border-[#1E293B]'
-                            }`}>
-                              <div className="py-1">
-                                {countryOptions.map((country) => (
-                                  <button
-                                    key={country.code}
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedCountry(country);
-                                      setIsCountryDropdownOpen(false);
-                                    }}
-                                    className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-[#60A5FA]/10 ${
-                                      theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
-                                    }`}
-                                  >
-                                    <span className="text-xl">{country.flag}</span>
-                                    <span className="text-sm font-medium">{country.code}</span>
-                                    <span className="text-sm text-[#64748B] truncate">{country.name}</span>
-                                  </button>
-                                ))}
+                            <>
+                              <div 
+                                className="fixed inset-0 z-40"
+                                onClick={() => setIsCountryDropdownOpen(false)}
+                              ></div>
+                              <div className={`absolute z-50 left-0 right-0 sm:right-auto sm:w-64 mt-2 rounded-lg shadow-lg border-2 max-h-[300px] overflow-y-auto ${
+                                theme === 'light'
+                                  ? 'bg-white border-[#E2E8F0]'
+                                  : 'bg-[#0F172A] border-[#1E293B]'
+                              }`}>
+                                <div className="py-1">
+                                  {countryOptions.map((country) => (
+                                    <button
+                                      key={country.code}
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedCountry(country);
+                                        setIsCountryDropdownOpen(false);
+                                      }}
+                                      className={`w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-[#60A5FA]/10 ${
+                                        theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
+                                      }`}
+                                    >
+                                      <span className="text-xl">{country.flag}</span>
+                                      <div>
+                                        <span className="text-base font-medium">{country.name}</span>
+                                        <span className="text-sm text-[#64748B] ml-2">{country.code}</span>
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
+                            </>
                           )}
                         </div>
 
@@ -397,7 +405,7 @@ export default function Home() {
                           {...register("phone")}
                           type="tel"
                           placeholder="Enter your phone number (optional)"
-                          className={`flex-1 px-5 py-4 rounded-lg border-2 transition-all duration-300 text-lg outline-none ${
+                          className={`flex-1 px-5 py-4 h-[60px] rounded-lg border-2 transition-all duration-300 text-lg outline-none ${
                             theme === 'light'
                               ? 'bg-white border-[#E2E8F0] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#1E293B] placeholder-[#94A3B8]'
                               : 'bg-[#0F172A] border-[#1E293B] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#F8FAFC] placeholder-[#F8FAFC]/40'
