@@ -65,11 +65,24 @@ const features = [
 // Add theme type and colors object
 type Theme = 'light' | 'dark';
 
+const countryOptions = [
+  { code: '+1', flag: '🇺🇸', name: 'United States' },
+  { code: '+34', flag: '🇪🇸', name: 'Spain' },
+  { code: '+44', flag: '🇬🇧', name: 'United Kingdom' },
+  { code: '+52', flag: '🇲🇽', name: 'Mexico' },
+  { code: '+33', flag: '🇫🇷', name: 'France' },
+  { code: '+49', flag: '🇩🇪', name: 'Germany' },
+  { code: '+39', flag: '🇮🇹', name: 'Italy' },
+  { code: '+351', flag: '🇵🇹', name: 'Portugal' },
+];
+
 export default function Home() {
   const [theme, setTheme] = useState<Theme>('light');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [signupNumber, setSignupNumber] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState(countryOptions[0]);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   
   const {
     register,
@@ -101,7 +114,7 @@ export default function Home() {
       setError(null);
       
       // Format phone number before sending
-      const formattedPhone = data.phone ? data.phone.replace(/[^\d]/g, '') : null;
+      const formattedPhone = data.phone ? `${selectedCountry.code}${data.phone.replace(/[^\d]/g, '')}` : null;
       
       // Check for duplicate email
       const { data: existingSignup } = await supabase
@@ -166,7 +179,7 @@ export default function Home() {
                 },
                 {
                   name: 'Phone',
-                  value: data.phone || 'Not provided',
+                  value: data.phone ? `${selectedCountry.flag} ${formattedPhone}` : 'Not provided',
                   inline: true,
                 },
                 {
@@ -333,22 +346,70 @@ export default function Home() {
                       <label className={`block text-lg font-medium mb-3 ${
                         theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
                       }`}>Phone number</label>
-                      <input
-                        {...register("phone")}
-                        type="tel"
-                        placeholder="Enter your phone number (optional)"
-                        className={`w-full px-5 py-4 rounded-lg border-2 transition-all duration-300 text-lg outline-none ${
-                          theme === 'light'
-                            ? 'bg-white border-[#E2E8F0] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#1E293B] placeholder-[#94A3B8]'
-                            : 'bg-[#0F172A] border-[#1E293B] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#F8FAFC] placeholder-[#F8FAFC]/40'
-                        }`}
-                      />
+                      <div className="relative flex gap-2">
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                            className={`h-full px-4 rounded-lg border-2 transition-all duration-300 flex items-center gap-2 ${
+                              theme === 'light'
+                                ? 'bg-white border-[#E2E8F0] hover:border-[#60A5FA] text-[#1E293B]'
+                                : 'bg-[#0F172A] border-[#1E293B] hover:border-[#60A5FA] text-[#F8FAFC]'
+                            }`}
+                          >
+                            <span className="text-xl">{selectedCountry.flag}</span>
+                            <span className="text-sm font-medium">{selectedCountry.code}</span>
+                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          
+                          {isCountryDropdownOpen && (
+                            <div className={`absolute z-50 mt-2 w-48 rounded-lg shadow-lg border-2 ${
+                              theme === 'light'
+                                ? 'bg-white border-[#E2E8F0]'
+                                : 'bg-[#0F172A] border-[#1E293B]'
+                            }`}>
+                              <div className="py-1">
+                                {countryOptions.map((country) => (
+                                  <button
+                                    key={country.code}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedCountry(country);
+                                      setIsCountryDropdownOpen(false);
+                                    }}
+                                    className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-[#60A5FA]/10 ${
+                                      theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
+                                    }`}
+                                  >
+                                    <span className="text-xl">{country.flag}</span>
+                                    <span className="text-sm font-medium">{country.code}</span>
+                                    <span className="text-sm text-[#64748B] truncate">{country.name}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <input
+                          {...register("phone")}
+                          type="tel"
+                          placeholder="Enter your phone number (optional)"
+                          className={`flex-1 px-5 py-4 rounded-lg border-2 transition-all duration-300 text-lg outline-none ${
+                            theme === 'light'
+                              ? 'bg-white border-[#E2E8F0] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#1E293B] placeholder-[#94A3B8]'
+                              : 'bg-[#0F172A] border-[#1E293B] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#F8FAFC] placeholder-[#F8FAFC]/40'
+                          }`}
+                        />
+                      </div>
                       {errors.phone && (
                         <p className="mt-3 text-[#60A5FA] text-base font-medium">{errors.phone.message}</p>
                       )}
                       <p className={`mt-2 text-sm ${
                         theme === 'light' ? 'text-[#64748B]' : 'text-[#F8FAFC]/60'
-                      }`}>Include country code for international numbers</p>
+                      }`}>Enter your number without country code</p>
                     </div>
 
                     <div className="space-y-4">
