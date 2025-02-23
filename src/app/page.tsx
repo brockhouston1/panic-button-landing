@@ -16,7 +16,19 @@ const anke = Noto_Sans_Devanagari({
 
 const schema = yup.object({
   email: yup.string().email("Please enter a valid email").required("Email is required"),
-  phone: yup.string().matches(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number").optional(),
+  phone: yup.string()
+    .transform((value) => {
+      // Remove all non-numeric characters
+      return value ? value.replace(/[^\d]/g, '') : value;
+    })
+    .test('phone', 'If providing a phone number, please enter a valid format', (value) => {
+      if (!value) return true; // Allow empty for optional
+      // US: 10 digits
+      // Spain: 9 digits starting with 6, 7, or 9
+      return (value.length === 10) || // US format
+             (value.length === 9 && /^[679]/.test(value)); // Spanish format
+    })
+    .optional(),
   userTypes: yup.array(yup.string()).min(1, "Please select at least one option").required(),
 }).required();
 
@@ -88,6 +100,9 @@ export default function Home() {
     try {
       setError(null);
       
+      // Format phone number before sending
+      const formattedPhone = data.phone ? data.phone.replace(/[^\d]/g, '') : null;
+      
       // Check for duplicate email
       const { data: existingSignup } = await supabase
         .from('signups')
@@ -105,7 +120,7 @@ export default function Home() {
         .insert([
           {
             email: data.email,
-            phone: data.phone || null,
+            phone: formattedPhone,
             user_types: data.userTypes,
           }
         ]);
@@ -317,11 +332,11 @@ export default function Home() {
                     <div>
                       <label className={`block text-lg font-medium mb-3 ${
                         theme === 'light' ? 'text-[#1E293B]' : 'text-[#F8FAFC]'
-                      }`}>Phone number (optional)</label>
+                      }`}>Phone number</label>
                       <input
                         {...register("phone")}
                         type="tel"
-                        placeholder="Enter your phone number"
+                        placeholder="Enter your phone number (optional)"
                         className={`w-full px-5 py-4 rounded-lg border-2 transition-all duration-300 text-lg outline-none ${
                           theme === 'light'
                             ? 'bg-white border-[#E2E8F0] focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/20 text-[#1E293B] placeholder-[#94A3B8]'
@@ -331,6 +346,9 @@ export default function Home() {
                       {errors.phone && (
                         <p className="mt-3 text-[#60A5FA] text-base font-medium">{errors.phone.message}</p>
                       )}
+                      <p className={`mt-2 text-sm ${
+                        theme === 'light' ? 'text-[#64748B]' : 'text-[#F8FAFC]/60'
+                      }`}>Include country code for international numbers</p>
                     </div>
 
                     <div className="space-y-4">
