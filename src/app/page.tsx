@@ -735,10 +735,6 @@ export default function Home() {
               <div className={`h-3 w-px ${
                 theme === 'light' ? 'bg-[#E2E8F0]' : 'bg-[#1E293B]'
               }`}></div>
-              <span>HIPAA Compliant</span>
-              <div className={`h-3 w-px ${
-                theme === 'light' ? 'bg-[#E2E8F0]' : 'bg-[#1E293B]'
-              }`}></div>
               <span>End-to-End Encrypted</span>
             </div>
           </motion.div>
